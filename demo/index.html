@@ -10,6 +10,10 @@
 
   <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+  <link rel="import" href="../../polymerfire/polymerfire.html">
+  <link rel="import" href="../../skeleton-auth/skeleton-auth.html">
   <link rel="import" href="../skeleton-smart-invite.html">
 
   <custom-style>
@@ -20,11 +24,38 @@
 <body>
 <div class="vertical-section-container centered">
   <h3>Basic skeleton-smart-invite demo</h3>
-  <demo-snippet>
+  <dom-bind>
     <template>
-      <skeleton-smart-invite></skeleton-smart-invite>
+      <!-- Configure Firebase app: -->
+      <firebase-app
+        auth-domain="fabricelements.firebaseapp.com"
+        database-url="https://fabricelements.firebaseio.com"
+        api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
+        storage-bucket="fabricelements.appspot.com"
+        messagingSenderId="908593247251"
+      ></firebase-app>
+
+      <firebase-auth
+        signed-in="{{signedIn}}"
+        user="{{user}}"
+        on-error="handleError">
+      </firebase-auth>
+
+      <dom-if if="[[!signedIn]]">
+        <template>
+          <skeleton-auth google>
+          </skeleton-auth>
+        </template>
+      </dom-if>
+      <dom-if if="[[signedIn]]">
+        <demo-snippet>
+          <template>
+            <skeleton-smart-invite></skeleton-smart-invite>
+          </template>
+        </demo-snippet>
+      </dom-if>
     </template>
-  </demo-snippet>
+  </dom-bind>
 </div>
 </body>
 </html>

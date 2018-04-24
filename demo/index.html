@@ -28,6 +28,7 @@
     <template>
       <!-- Configure Firebase app: -->
       <firebase-app
+        project-id="fabricelements"
         auth-domain="fabricelements.firebaseapp.com"
         database-url="https://fabricelements.firebaseio.com"
         api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
@@ -50,7 +51,7 @@
       <dom-if if="[[signedIn]]">
         <demo-snippet>
           <template>
-            <skeleton-smart-invite></skeleton-smart-invite>
+            <skeleton-smart-invite info='{"organization":"FabricElements","rol":"admin"}'></skeleton-smart-invite>
           </template>
         </demo-snippet>
       </dom-if>

@@ -3,6 +3,7 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-icons/communication-icons.html">
+<link rel="import" href="../iron-icons/notification-icons.html">
 <link rel="import" href="./icons/app.html">
 
 <dom-module id="skeleton-smart-invite">
@@ -16,13 +17,41 @@
         display: none !important;
       }
 
-      #phone-icon {
+      #value-icon {
         margin-right: 0.5rem;
       }
 
       #status-icon {
         margin-left: 0.5rem;
         color: var(--paper-green-500);
+      }
+
+      #status-icon.sync {
+        transform: rotate(45deg);
+        color: var(--paper-grey-500);
+
+        -webkit-animation: spin 4s linear infinite;
+        -moz-animation: spin 4s linear infinite;
+        animation: spin 4s linear infinite;
+      }
+
+      @-moz-keyframes spin {
+        100% {
+          -moz-transform: rotate(-360deg);
+        }
+      }
+
+      @-webkit-keyframes spin {
+        100% {
+          -webkit-transform: rotate(-360deg);
+        }
+      }
+
+      @keyframes spin {
+        100% {
+          -webkit-transform: rotate(-360deg);
+          transform: rotate(-360deg);
+        }
       }
 
       #status-icon[invalid] {
@@ -51,16 +80,14 @@
                  type="text"
                  prevent-invalid-input
                  minlength="4"
-                 pattern="[[validationPattern]]"
                  error-message="[[errorMessage]]"
                  invalid="{{invalid}}"
                  autocomplete="on"
-                 auto-validate
     >
-      <iron-icon icon="[[iconType]]" slot="prefix" id="phone-icon"></iron-icon>
-      <iron-icon icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]"
+      <iron-icon icon="[[iconType]]" slot="prefix" id="value-icon"></iron-icon>
+      <iron-icon class$="[[iconValidationClass]]" icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]"
                  invalid$="[[invalid]]" id="status-icon"></iron-icon>
-      <paper-button raised slot="suffix" hidden$="[[buttonHidden]]">INVITE
+      <paper-button raised slot="suffix" hidden$="[[buttonHidden]]" on-tap="_invite">INVITE
         <iron-icon icon="send"></iron-icon>
       </paper-button>
     </paper-input>
@@ -94,7 +121,7 @@
           },
           errorMessage: {
             type: String,
-            value: 'Invalid phone number',
+            value: 'Invalid value',
           },
           value: {
             type: String,
@@ -108,12 +135,10 @@
             value: false,
             reflectToAttribute: true,
             notify: true,
-            observer: '_invalidObserver',
           },
           iconHidden: {
             type: Boolean,
             value: true,
-            computed: '_hideIcon(value)',
           },
           buttonHidden: {
             type: Boolean,
@@ -121,16 +146,32 @@
           },
           iconValidation: {
             type: String,
-            value: 'check',
-            computed: '_computeValidationIcon(invalid)',
+            value: null,
           },
           iconType: {
             type: String,
             value: 'info',
           },
-          validationPattern: {
+          loading: {
+            type: Boolean,
+            value: false,
+            observer: '_loadingObserver',
+          },
+          errorPhone: {
             type: String,
-            value: '(?:\\+)([0-9]{1,3})([0-9]{9,10})',
+            value: 'Invalid phone number',
+          },
+          errorEmail: {
+            type: String,
+            value: 'Invalid email',
+          },
+          iconValidationClass: {
+            type: String,
+            value: null,
+          },
+          sent: {
+            type: Boolean,
+            value: false,
           },
         };
       }
@@ -146,57 +187,68 @@
         return status ? 'close' : 'check';
       }
 
-      /**
-       * Hide icon
-       *
-       * @param {string} text
-       * @return {boolean}
-       * @private
-       */
-      _hideIcon(text) {
-        return !text;
-      }
-
-      /**
-       * Hide button
-       *
-       * @param {string} text
-       * @return {boolean}
-       * @private
-       */
-      _hideButton(text) {
-        return !text;
-      }
-
       _valueObserver(value) {
         let isValidPhone = false;
         let isValidEmail = false;
+        this.iconType = 'info';
         if (!value) return;
         if (value.length < 3) {
           this.iconType = 'info';
+        } else {
+          this.invalid = true;
+          this.buttonHidden = true;
         }
         isValidPhone = this._validatePhone(value);
         if (isValidPhone) {
+          console.log('Its a valid PHONE!');
           this.iconType = 'communication:phone';
+          this.invalid = false;
+          this.buttonHidden = false;
           return isValidPhone;
         }
         isValidEmail = this._validateEmail(value);
         if (isValidEmail) {
+          console.log('Its a valid EMAIL!');
           this.iconType = 'communication:email';
+          this.invalid = false;
+          this.buttonHidden = false;
           return isValidEmail;
         }
         return false;
       }
 
       _validateEmail(text) {
-        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
         return re.test(text);
       }
 
       _validatePhone(text) {
-        let re = /^\+?([0-9]{3})\)?[ ]?([0-9]{3})[ ]?([0-9]{3})[ ]?([0-9]{3})$/;
+        let re = /^(?:\+)([0-9]{1,3})([0-9]{9,10})$/;
         return re.test(text);
       }
+
+      _invite() {
+        this.iconValidation = 'notification:sync';
+        this.iconValidationClass = 'sync';
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.iconValidationClass = '';
+          this.iconValidation = 'check';
+          this.iconHidden = false;
+          this.sent = true;
+        }, 3000);
+      }
+
+      _loadingObserver(loading) {
+        if (loading) {
+          this.iconHidden = false;
+          this.buttonHidden = true;
+        } else {
+          this.iconHidden = true;
+        }
+      }
+
     }
 
     window.customElements.define(SkeletonSmartInvite.is, SkeletonSmartInvite);

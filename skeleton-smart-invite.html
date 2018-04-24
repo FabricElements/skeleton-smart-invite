@@ -1,12 +1,67 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/communication-icons.html">
+<link rel="import" href="./icons/app.html">
 
 <dom-module id="skeleton-smart-invite">
   <template>
-    <style>
+    <style is="custom-style">
       :host {
         display: block;
       }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      #phone-icon {
+        margin-right: 0.5rem;
+      }
+
+      #status-icon {
+        margin-left: 0.5rem;
+        color: var(--paper-green-500);
+      }
+
+      #status-icon[invalid] {
+        color: var(--error-color);
+      }
+
+      paper-button{
+        background-color: var(--paper-blue-a200);
+        color: white;
+        position: relative;
+        bottom: 0.3rem;
+        --paper-button: {
+          padding: 0.3rem;
+        };
+      }
+
+      paper-button iron-icon{
+        margin-left: 0.8rem;
+        transform: rotate(-45deg);
+        position: relative;
+        bottom: 0.1rem;
+      }
     </style>
+    <paper-input value="{{value}}"
+                 label="[[label]]"
+                 type="text"
+                 prevent-invalid-input
+                 minlength="4"
+                 pattern="[[validationPattern]]"
+                 error-message="[[errorMessage]]"
+                 invalid="{{invalid}}"
+                 autocomplete="on"
+                 auto-validate
+    >
+      <iron-icon icon="[[iconType]]" slot="prefix" id="phone-icon"></iron-icon>
+      <iron-icon icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]"
+                 invalid$="[[invalid]]" id="status-icon"></iron-icon>
+      <paper-button raised slot="suffix" hidden$="[[buttonHidden]]">INVITE<iron-icon icon="send"></iron-icon></paper-button>
+    </paper-input>
   </template>
 
   <script>
@@ -30,7 +85,88 @@
        * @return {object}
        */
       static get properties() {
-        return {};
+        return {
+          label: {
+            type: String,
+            value: 'Mobile number or email',
+          },
+          errorMessage: {
+            type: String,
+            value: 'Invalid phone number',
+          },
+          value: {
+            type: String,
+            value: null,
+            reflectToAttribute: true,
+            notify: true,
+            observer: '_valueObserver',
+          },
+          invalid: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true,
+            notify: true,
+            observer: '_invalidObserver',
+          },
+          iconHidden: {
+            type: Boolean,
+            value: true,
+            computed: '_hideIcon(value)',
+          },
+          buttonHidden: {
+            type: Boolean,
+            value: true,
+          },
+          iconValidation: {
+            type: String,
+            value: 'check',
+            computed: '_computeValidationIcon(invalid)',
+          },
+          iconType: {
+            type: String,
+            value: 'info',
+            /*
+                        value: 'communication:phone',
+            */
+          },
+          validationPattern: {
+            type: String,
+            value: '(?:\\+)([0-9]{1,3})([0-9]{9,10})',
+          },
+        };
+      }
+
+      /**
+       * Validation icon
+       *
+       * @param {boolean} status
+       * @return {string}
+       * @private
+       */
+      _computeValidationIcon(status) {
+        return status ? 'close' : 'check';
+      }
+
+      /**
+       * Hide icon
+       *
+       * @param {string} text
+       * @return {boolean}
+       * @private
+       */
+      _hideIcon(text) {
+        return !text;
+      }
+
+      /**
+       * Hide button
+       *
+       * @param {string} text
+       * @return {boolean}
+       * @private
+       */
+      _hideButton(text) {
+        return !text;
       }
     }
 

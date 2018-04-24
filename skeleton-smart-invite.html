@@ -1,4 +1,6 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymerfire/firebase-firestore-script.html">
+<link rel="import" href="../polymerfire/firebase-auth.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="./icons.html">
@@ -72,6 +74,9 @@
         width: 16px;
       }
     </style>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+
     <paper-input value="{{value}}"
                  label="[[label]]"
                  type="text"
@@ -179,6 +184,17 @@
             type: Boolean,
             value: false,
           },
+           user: {
+            type: Object,
+            value: {},
+          },
+          info: {
+            type: Object,
+            value: {
+              organization: null,
+              rol: null,
+            },
+          },
         };
       }
 
@@ -272,13 +288,40 @@
         this.iconValidation = 'smart-invite:sync';
         this.iconValidationClass = 'sync';
         this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.iconValidationClass = '';
-          this.iconValidation = 'smart-invite:check';
-          this.iconHidden = false;
-          this.sent = true;
-        }, 3000);
+
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        const data = {
+          created: timestamp,
+          updated: timestamp,
+          uid: this.user.uid,
+          name: this.user.displayName,
+          avatar: this.user.photoURL,
+          organization: this.info.organization,
+          rol: this.info.rol,
+        };
+
+        if (this._validateEmail(this.value)) {
+          data.email = this.value;
+        }
+
+        if (this._validatePhone(this.value)) {
+          data.phoneNumber = this.value;
+        }
+
+        firebase
+          .firestore()
+          .collection('connection-invite').add(data)
+          .then(() => {
+            this.value = null,
+            this.loading = false;
+            this.iconValidationClass = '';
+            this.iconValidation = 'smart-invite:check';
+            this.iconHidden = false;
+            this.sent = true;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     }
 

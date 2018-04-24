@@ -29,7 +29,7 @@
         color: var(--error-color);
       }
 
-      paper-button{
+      paper-button {
         background-color: var(--paper-blue-a200);
         color: white;
         position: relative;
@@ -39,7 +39,7 @@
         };
       }
 
-      paper-button iron-icon{
+      paper-button iron-icon {
         margin-left: 0.8rem;
         transform: rotate(-45deg);
         position: relative;
@@ -60,7 +60,9 @@
       <iron-icon icon="[[iconType]]" slot="prefix" id="phone-icon"></iron-icon>
       <iron-icon icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]"
                  invalid$="[[invalid]]" id="status-icon"></iron-icon>
-      <paper-button raised slot="suffix" hidden$="[[buttonHidden]]">INVITE<iron-icon icon="send"></iron-icon></paper-button>
+      <paper-button raised slot="suffix" hidden$="[[buttonHidden]]">INVITE
+        <iron-icon icon="send"></iron-icon>
+      </paper-button>
     </paper-input>
   </template>
 
@@ -125,9 +127,6 @@
           iconType: {
             type: String,
             value: 'info',
-            /*
-                        value: 'communication:phone',
-            */
           },
           validationPattern: {
             type: String,
@@ -167,6 +166,36 @@
        */
       _hideButton(text) {
         return !text;
+      }
+
+      _valueObserver(value) {
+        let isValidPhone = false;
+        let isValidEmail = false;
+        if (!value) return;
+        if (value.length < 3) {
+          this.iconType = 'info';
+        }
+        isValidPhone = this._validatePhone(value);
+        if (isValidPhone) {
+          this.iconType = 'communication:phone';
+          return isValidPhone;
+        }
+        isValidEmail = this._validateEmail(value);
+        if (isValidEmail) {
+          this.iconType = 'communication:email';
+          return isValidEmail;
+        }
+        return false;
+      }
+
+      _validateEmail(text) {
+        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(text);
+      }
+
+      _validatePhone(text) {
+        let re = /^\+?([0-9]{3})\)?[ ]?([0-9]{3})[ ]?([0-9]{3})[ ]?([0-9]{3})$/;
+        return re.test(text);
       }
     }
 

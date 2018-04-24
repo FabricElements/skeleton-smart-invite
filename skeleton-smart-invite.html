@@ -1,0 +1,39 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="skeleton-smart-invite">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+  </template>
+
+  <script>
+    /**
+     * `skeleton-smart-invite`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonSmartInvite extends Polymer.Element {
+      /**
+       * @return {string}
+       */
+      static get is() {
+        return 'skeleton-smart-invite';
+      }
+
+      /**
+       * @return {object}
+       */
+      static get properties() {
+        return {};
+      }
+    }
+
+    window.customElements.define(SkeletonSmartInvite.is, SkeletonSmartInvite);
+  </script>
+</dom-module>

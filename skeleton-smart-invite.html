@@ -1,10 +1,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../iron-icons/communication-icons.html">
-<link rel="import" href="../iron-icons/notification-icons.html">
-<link rel="import" href="./icons/app.html">
+<link rel="import" href="./icons.html">
 
 <dom-module id="skeleton-smart-invite">
   <template>
@@ -18,7 +15,7 @@
       }
 
       #value-icon {
-        margin-right: 0.5rem;
+        margin: 10px 0.5rem 10px 0;
       }
 
       #status-icon {
@@ -59,20 +56,20 @@
       }
 
       paper-button {
+        padding: 5px;
+        font-size: 16px;
+        margin: 5px 0;
+      }
+
+      paper-button:not([disabled]) {
         background-color: var(--paper-blue-a200);
         color: white;
-        position: relative;
-        bottom: 0.3rem;
-        --paper-button: {
-          padding: 0.3rem;
-        };
       }
 
       paper-button iron-icon {
-        margin-left: 0.8rem;
-        transform: rotate(-45deg);
-        position: relative;
-        bottom: 0.1rem;
+        margin-left: 5px;
+        height: 16px;
+        width: 16px;
       }
     </style>
     <paper-input value="{{value}}"
@@ -82,13 +79,22 @@
                  minlength="4"
                  error-message="[[errorMessage]]"
                  invalid="{{invalid}}"
-                 autocomplete="on"
-    >
-      <iron-icon icon="[[iconType]]" slot="prefix" id="value-icon"></iron-icon>
-      <iron-icon class$="[[iconValidationClass]]" icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]"
-                 invalid$="[[invalid]]" id="status-icon"></iron-icon>
-      <paper-button raised slot="suffix" hidden$="[[buttonHidden]]" on-tap="_invite">INVITE
-        <iron-icon icon="send"></iron-icon>
+                 autocomplete="on">
+      <iron-icon icon="[[iconType]]"
+                 slot="prefix"
+                 id="value-icon"></iron-icon>
+      <iron-icon class$="[[iconValidationClass]]"
+                 icon="[[iconValidation]]"
+                 slot="suffix"
+                 hidden$="[[iconHidden]]"
+                 invalid$="[[invalid]]"
+                 id="status-icon"></iron-icon>
+      <paper-button slot="suffix"
+                    hidden$="[[buttonHidden]]"
+                    disabled$="[[buttonHidden]]"
+                    on-tap="_invite">
+        INVITE
+        <iron-icon icon="smart-invite:send"></iron-icon>
       </paper-button>
     </paper-input>
   </template>
@@ -150,7 +156,7 @@
           },
           iconType: {
             type: String,
-            value: 'info',
+            value: 'smart-invite:info',
           },
           loading: {
             type: Boolean,
@@ -204,36 +210,36 @@
       /**
        * Value Observer
        * @param {string} value
-       * @return {boolean}
+       * @return {undefined}
        * @private
        */
       _valueObserver(value) {
         let isValidPhone = false;
         let isValidEmail = false;
-        this.iconType = 'info';
+        this.iconType = 'smart-invite:info';
         this.iconHidden = true;
-        if (!value) return;
+        if (!value) {
+          this.buttonHidden = true;
+          return;
+        }
         if (value.length < 3) {
-          this.iconType = 'info';
+          this.iconType = 'smart-invite:info';
         } else {
           this.invalid = true;
           this.buttonHidden = true;
         }
         isValidPhone = this._validatePhone(value);
         if (isValidPhone) {
-          this.iconType = 'communication:phone';
+          this.iconType = 'smart-invite:phone';
           this.invalid = false;
           this.buttonHidden = false;
-          return isValidPhone;
         }
         isValidEmail = this._validateEmail(value);
         if (isValidEmail) {
-          this.iconType = 'communication:email';
+          this.iconType = 'smart-invite:email';
           this.invalid = false;
           this.buttonHidden = false;
-          return isValidEmail;
         }
-        return false;
       }
 
       /**
@@ -263,13 +269,13 @@
        * @private
        */
       _invite() {
-        this.iconValidation = 'notification:sync';
+        this.iconValidation = 'smart-invite:sync';
         this.iconValidationClass = 'sync';
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
           this.iconValidationClass = '';
-          this.iconValidation = 'check';
+          this.iconValidation = 'smart-invite:check';
           this.iconHidden = false;
           this.sent = true;
         }, 3000);

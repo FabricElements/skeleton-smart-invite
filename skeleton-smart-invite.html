@@ -190,10 +190,7 @@
           },
           info: {
             type: Object,
-            value: {
-              organization: null,
-              rol: null,
-            },
+            value: null,
           },
           inputType: {
             type: String,
@@ -294,9 +291,10 @@
           uid: this.user.uid,
           name: this.user.displayName,
           avatar: this.user.photoURL,
-          organization: this.info.organization,
-          rol: this.info.rol,
         };
+
+        let finalData;
+        this.info ? finalData = Object.assign(data, this.info) : finalData = data;
 
         if (this._validateEmail(this.value)) {
           data.email = this.value;
@@ -308,7 +306,7 @@
 
         firebase
           .firestore()
-          .collection('connection-invite').add(data)
+          .collection('connection-invite').add(finalData)
           .then(() => {
             this.value = null,
               this.loading = false;

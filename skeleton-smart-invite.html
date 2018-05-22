@@ -7,6 +7,9 @@
 
 <dom-module id="skeleton-smart-invite">
   <template>
+    <!--suppress CssInvalidPseudoSelector -->
+    <!--suppress CssUnresolvedCustomProperty -->
+    <!--suppress CssUnresolvedCustomPropertySet -->
     <style is="custom-style">
       :host {
         display: block;
@@ -61,6 +64,7 @@
         padding: 5px;
         font-size: 16px;
         margin: 5px 0;
+        @apply(--skeleton-smart-invite-button);
       }
 
       paper-button:not([disabled]) {
@@ -70,8 +74,8 @@
 
       paper-button iron-icon {
         margin-left: 5px;
-        height: 16px;
-        width: 16px;
+        --iron-icon-width: 16px;
+        --iron-icon-height: 16px;
       }
     </style>
 
@@ -293,8 +297,12 @@
           avatar: this.user.photoURL,
         };
 
-        let finalData;
-        this.info ? finalData = Object.assign(data, this.info) : finalData = data;
+        let finalData = data;
+        if (this.info) {
+          console.log(this.info);
+          finalData = Object.assign(data, this.info);
+          console.log(finalData);
+        }
 
         if (this._validateEmail(this.value)) {
           data.email = this.value;
@@ -308,8 +316,8 @@
           .firestore()
           .collection('connection-invite').add(finalData)
           .then(() => {
-            this.value = null,
-              this.loading = false;
+            this.value = null;
+            this.loading = false;
             this.iconValidationClass = '';
             this.iconValidation = 'smart-invite:check';
             this.iconHidden = false;
@@ -351,7 +359,6 @@
           this.inputType = 'email';
           this.iconType = 'smart-invite:email';
           this.errorMessage = 'Invalid email';
-          return;
         }
       }
     }

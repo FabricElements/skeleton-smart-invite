@@ -6,57 +6,66 @@
 
   <title>skeleton-smart-invite demo</title>
 
-  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <script type="module">
+    import '@polymer/iron-demo-helpers/demo-pages-shared-styles';
+    import '@polymer/iron-demo-helpers/demo-snippet';
+    import '@polymer/polymer/lib/elements/dom-if.js';
+    import '@polymer/polymer/lib/elements/dom-bind.js';
+    import '/polymerfire/polymerfire.js';
+    import '/skeleton-auth/skeleton-auth.js';
+    import '../skeleton-smart-invite.js';</script>
 
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../polymer/lib/elements/dom-if.html">
-  <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
-  <link rel="import" href="../../polymerfire/polymerfire.html">
-  <link rel="import" href="../../skeleton-auth/skeleton-auth.html">
-  <link rel="import" href="../skeleton-smart-invite.html">
+  <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
 
-  <custom-style>
+$_documentContainer.innerHTML = `<custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
     </style>
-  </custom-style>
+  </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
-<div class="vertical-section-container centered">
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
   <h3>Basic skeleton-smart-invite demo</h3>
   <dom-bind>
     <template>
-      <!-- Configure Firebase app: -->
-      <firebase-app
-        project-id="fabricelements"
-        auth-domain="fabricelements.firebaseapp.com"
-        database-url="https://fabricelements.firebaseio.com"
-        api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
-        storage-bucket="fabricelements.appspot.com"
-        messagingSenderId="908593247251"
-      ></firebase-app>
+      <firebase-app project-id="fabricelements" auth-domain="fabricelements.firebaseapp.com" database-url="https://fabricelements.firebaseio.com" api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8" storage-bucket="fabricelements.appspot.com" messagingsenderid="908593247251"></firebase-app>
 
-      <firebase-auth
-        signed-in="{{signedIn}}"
-        user="{{user}}"
-        on-error="handleError">
+      <firebase-auth signed-in="{{signedIn}}" user="{{user}}" on-error="handleError">
       </firebase-auth>
 
       <dom-if if="[[!signedIn]]">
         <template>
-          <skeleton-auth google>
+          <skeleton-auth google="">
           </skeleton-auth>
         </template>
       </dom-if>
       <dom-if if="[[signedIn]]">
         <demo-snippet>
           <template>
-            <skeleton-smart-invite info='{"organization":"FabricElements","rol":"admin"}'></skeleton-smart-invite>
+            <skeleton-smart-invite info="{&quot;organization&quot;:&quot;FabricElements&quot;,&quot;rol&quot;:&quot;admin&quot;}"></skeleton-smart-invite>
           </template>
         </demo-snippet>
       </dom-if>
     </template>
   </dom-bind>
-</div>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </body>
 </html>

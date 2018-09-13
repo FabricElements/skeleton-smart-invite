@@ -1,7 +1,7 @@
 {
   "name": "@fabricelements/skeleton-smart-invite",
   "main": "skeleton-smart-invite.js",
-  "version": "0.0.1",
+  "version": "3.0.0",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
@@ -23,10 +23,13 @@
     "serve": "polymer serve -H 0.0.0.0"
   },
   "dependencies": {
-    "@polymer/polymer": "^3.0.0",
-    "@polymer/paper-input": "^3.0.0-pre.18",
+    "@fabricelements/firebase-config": "0.0.1",
+    "@fabricelements/skeleton-auth": "0.0.1",
     "@polymer/iron-icons": "^3.0.0-pre.18",
-    "@polymer/paper-button": "^3.0.0-pre.18"
+    "@polymer/paper-button": "^3.0.0-pre.18",
+    "@polymer/paper-input": "^3.0.0-pre.18",
+    "@polymer/polymer": "^3.0.0",
+    "firebase": "^5.4.2"
   },
   "resolutions": {
     "inherits": "2.0.3",

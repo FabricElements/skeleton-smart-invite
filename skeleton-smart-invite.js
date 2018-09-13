@@ -1,10 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import 'polymerfire/firebase-firestore-script.js';
-import 'polymerfire/firebase-auth.js';
+/* eslint-disable max-len */
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
 import './icons.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /**
  * `skeleton-smart-invite`
  *
@@ -14,6 +13,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
  * @demo demo/index.html
  */
 class SkeletonSmartInvite extends PolymerElement {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <!--suppress CssInvalidPseudoSelector -->
@@ -90,10 +92,10 @@ class SkeletonSmartInvite extends PolymerElement {
 
     <firebase-auth user="{{user}}"></firebase-auth>
 
-    <paper-input value="{{value}}" label="[[label]]" type="text" prevent-invalid-input="" minlength="4" error-message="[[errorMessage]]" invalid="{{invalid}}" autocomplete="on">
+    <paper-input value="{{value}}" label="[[label]]" type="text" prevent-invalid-input minlength="4" error-message="[[errorMessage]]" invalid="{{invalid}}" autocomplete="on">
       <iron-icon icon="[[iconType]]" slot="prefix" id="value-icon"></iron-icon>
-      <iron-icon class\$="[[iconValidationClass]]" icon="[[iconValidation]]" slot="suffix" hidden\$="[[iconHidden]]" invalid\$="[[invalid]]" id="status-icon"></iron-icon>
-      <paper-button slot="suffix" hidden\$="[[buttonHidden]]" disabled\$="[[buttonHidden]]" on-tap="_invite">
+      <iron-icon class$="[[iconValidationClass]]" icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]" invalid$="[[invalid]]" id="status-icon"></iron-icon>
+      <paper-button slot="suffix" hidden$="[[buttonHidden]]" disabled$="[[buttonHidden]]" on-tap="_invite">
         INVITE
         <iron-icon icon="smart-invite:send"></iron-icon>
       </paper-button>

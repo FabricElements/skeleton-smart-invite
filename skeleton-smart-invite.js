@@ -189,6 +189,16 @@ class SkeletonSmartInvite extends PolymerElement {
   }
 
   /**
+   * Connected callback
+   */
+  connectedCallback() {
+    super.connectedCallback();
+    firebase.auth().onAuthStateChanged((user) => {
+      this.user = user;
+    });
+  }
+
+  /**
    * Validation icon
    *
    * @param {boolean} status
@@ -284,9 +294,7 @@ class SkeletonSmartInvite extends PolymerElement {
 
     let finalData = data;
     if (this.info) {
-      console.log(this.info);
       finalData = Object.assign(data, this.info);
-      console.log(finalData);
     }
 
     if (this._validateEmail(this.value)) {

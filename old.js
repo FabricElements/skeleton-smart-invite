@@ -1,64 +1,22 @@
-import {html, LitElement} from 'lit-element';
+/* eslint-disable max-len */
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
 import './icons.js';
 
 /**
- * skeleton-smart-invite
+ * `skeleton-smart-invite`
+ *
+ *
+ * @customElement
+ * @polymer
+ * @demo demo/index.html
  */
-class SkeletonSmartInvite extends LitElement {
+class Old extends PolymerElement {
   /**
-   * properties
+   * @return {!HTMLTemplateElement}
    */
-  static get properties() {
-    return {
-      label: {type: String, attribute: 'label'},
-      errorMessage: {type: String, attribute: 'error-message'},
-      value: {type: String, reflect: true, attribute: 'value'},
-      invalid: {type: Boolean, reflect: true, attribute: 'invalid'},
-      iconHidden: {type: Boolean, attribute: 'icon-hidden'},
-      buttonHidden: {type: Boolean, attribute: 'button-hidden'},
-      iconValidation: {type: String, attribute: 'icon-validation'},
-      iconType: {type: String, attribute: 'icon-type'},
-      loading: {type: Boolean, attribute: 'loading'},
-      errorPhone: {type: String, attribute: 'error-phone'},
-      errorEmail: {type: String, attribute: 'error-email'},
-      iconValidationClass: {type: String, attribute: 'icon-validation-class'},
-      sent: {type: Boolean, attribute: 'sent'},
-      user: {type: Object, attribute: 'user'},
-      info: {type: Object, attribute: 'info'},
-      inputType: {type: String, attribute: 'input-type'},
-    };
-  }
-
-  /**
-   * values
-   */
-  constructor() {
-    super();
-    this.label = 'Mobile number or email';
-    this.errorMessage = 'Invalid value';
-    this.value = null;
-    this.invalid = false;
-    this.iconHidden = true;
-    this.buttonHidden = true;
-    this.iconValidation = null;
-    this.iconType = 'smart-invite:info';
-    this.loading = false;
-    this.errorPhone = 'Invalid phone number';
-    this.errorEmail = 'Invalid email';
-    this.inconValidationClass = null;
-    this.sent = false;
-    this.user = {};
-    this.info = null;
-    this.inputType = null;
-  }
-
-  /**
-   * render
-   * @return {TemplateResult|TemplateResult|TemplateResult}
-   */
-  render() {
+  static get template() {
     return html`
     <!--suppress CssInvalidPseudoSelector -->
     <!--suppress CssUnresolvedCustomProperty -->
@@ -122,7 +80,7 @@ class SkeletonSmartInvite extends LitElement {
 
       paper-button:not([disabled]) {
         background-color: var(--paper-blue-a200);
-        color: red;
+        color: white;
       }
 
       paper-button iron-icon {
@@ -132,31 +90,102 @@ class SkeletonSmartInvite extends LitElement {
       }
     </style>
 
-    <firebase-auth user="${this.user}"></firebase-auth>
+    <firebase-auth user="{{user}}"></firebase-auth>
 
-   <paper-input .value="${this.value}" 
-   label="${this.label}" type="text" 
-   prevent-invalid-input minlength="4" 
-   error-message="${this.errorMessage}" 
-   invalid="${this.invalid}" 
-   autocomplete="on">
-     <iron-icon icon="${this.iconType}" slot="prefix" id="value-icon">
-</iron-icon>
-     <iron-icon class="${this.iconValidation}"
-     icon="${this.iconValidation}" 
-     slot="suffix"
-     ?hidden="${this.iconHidden}"
-     ?invalid="${this.invalid}" 
-     id="status-icon"></iron-icon>
-     <paper-button slot="suffix" 
-     ?hidden="${this.iconHidden}" 
-     ?disabled="${this.buttonHidden}" 
-     on-tap="_invite">
+    <paper-input value="{{value}}" label="[[label]]" type="text" prevent-invalid-input minlength="4" error-message="[[errorMessage]]" invalid="{{invalid}}" autocomplete="on">
+      <iron-icon icon="[[iconType]]" slot="prefix" id="value-icon"></iron-icon>
+      <iron-icon class$="[[iconValidationClass]]" icon="[[iconValidation]]" slot="suffix" hidden$="[[iconHidden]]" invalid$="[[invalid]]" id="status-icon"></iron-icon>
+      <paper-button slot="suffix" hidden$="[[buttonHidden]]" disabled$="[[buttonHidden]]" on-tap="_invite">
         INVITE
         <iron-icon icon="smart-invite:send"></iron-icon>
       </paper-button>
     </paper-input>
 `;
+  }
+
+  /**
+   * @return {string}
+   */
+  static get is() {
+    return 'skeleton-smart-invite';
+  }
+
+  /**
+   * @return {object}
+   */
+  static get properties() {
+    return {
+      label: {
+        type: String,
+        value: 'Mobile number or email',
+      },
+      errorMessage: {
+        type: String,
+        value: 'Invalid value',
+      },
+      value: {
+        type: String,
+        value: null,
+        reflectToAttribute: true,
+        notify: true,
+        observer: '_valueObserver',
+      },
+      invalid: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        notify: true,
+      },
+      iconHidden: {
+        type: Boolean,
+        value: true,
+      },
+      buttonHidden: {
+        type: Boolean,
+        value: true,
+      },
+      iconValidation: {
+        type: String,
+        value: null,
+      },
+      iconType: {
+        type: String,
+        value: 'smart-invite:info',
+      },
+      loading: {
+        type: Boolean,
+        value: false,
+        observer: '_loadingObserver',
+      },
+      errorPhone: {
+        type: String,
+        value: 'Invalid phone number',
+      },
+      errorEmail: {
+        type: String,
+        value: 'Invalid email',
+      },
+      iconValidationClass: {
+        type: String,
+        value: null,
+      },
+      sent: {
+        type: Boolean,
+        value: false,
+      },
+      user: {
+        type: Object,
+        value: {},
+      },
+      info: {
+        type: Object,
+        value: null,
+      },
+      inputType: {
+        type: String,
+        value: null,
+      },
+    };
   }
 
   /**
@@ -195,27 +224,12 @@ class SkeletonSmartInvite extends LitElement {
   }
 
   /**
-   * updated
-   * @param {PropertyValues} changedProperties
-   */
-  updated(changedProperties) {
-    // @ts-ignore
-    changedProperties.forEach((oldValue, propName) => {
-      switch (propName) {
-        case 'value':
-          this._valueObserver();
-          break;
-      }
-    });
-  }
-
-  /**
    * Value Observer
+   * @param {string} value
    * @return {undefined}
    * @private
    */
-  _valueObserver() {
-    const value = this.value;
+  _valueObserver(value) {
     let isValidPhone = false;
     let isValidEmail = false;
     this.iconType = 'smart-invite:info';
@@ -256,7 +270,7 @@ class SkeletonSmartInvite extends LitElement {
    * @private
    */
   _validateEmail(text) {
-    const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+    let re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
     return re.test(text);
   }
 
@@ -290,6 +304,7 @@ class SkeletonSmartInvite extends LitElement {
     if (this._validatePhone(this.value)) {
       data.phoneNumber = this.value;
     }
+
     firebase.firestore().collection('connection-invite').add(finalData).then(() => {
       this.value = null;
       this.loading = false;
@@ -320,8 +335,8 @@ class SkeletonSmartInvite extends LitElement {
    */
   _preValidateValue(text) {
     this.value = text.toLowerCase();
-    const rePhone = /\++[0-9]+/;
-    const reEmail = /[a-z0-9._%+-]+@+[a-z0-9._%+-]+/;
+    let rePhone = /\++[0-9]+/;
+    let reEmail = /[a-z0-9._%+-]+@+[a-z0-9._%+-]+/;
     if (rePhone.test(text)) {
       this.value = text.replace(/[-_() ]/g, '');
       this.inputType = 'phone';
@@ -337,4 +352,4 @@ class SkeletonSmartInvite extends LitElement {
   }
 }
 
-customElements.define('skeleton-smart-invite', SkeletonSmartInvite);
+window.customElements.define(Old.is, Old);

@@ -1,7 +1,10 @@
+/* eslint-disable max-len */
 import {html, LitElement} from 'lit-element';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
 import './icons.js';
+
+const firebase = window.firebase;
 
 /**
  * skeleton-smart-invite
@@ -14,8 +17,8 @@ class SkeletonSmartInvite extends LitElement {
     return {
       label: {type: String, attribute: 'label'},
       errorMessage: {type: String, attribute: 'error-message'},
-      value: {type: String, reflect: true, attribute: 'value'},
-      invalid: {type: Boolean, reflect: true, attribute: 'invalid'},
+      value: {type: String},
+      invalid: {type: Boolean, attribute: 'invalid', reflect: true},
       iconHidden: {type: Boolean, attribute: 'icon-hidden'},
       buttonHidden: {type: Boolean, attribute: 'button-hidden'},
       iconValidation: {type: String, attribute: 'icon-validation'},
@@ -122,7 +125,7 @@ class SkeletonSmartInvite extends LitElement {
 
       paper-button:not([disabled]) {
         background-color: var(--paper-blue-a200);
-        color: red;
+        color: white;
       }
 
       paper-button iron-icon {
@@ -133,12 +136,15 @@ class SkeletonSmartInvite extends LitElement {
     </style>
 
     <firebase-auth user="${this.user}"></firebase-auth>
-
-   <paper-input .value="${this.value}" 
-   label="${this.label}" type="text" 
-   prevent-invalid-input minlength="4" 
+   <paper-input 
+   .value="${this.value}"
+   label="${this.label}" 
+   type="text" 
+   prevent-invalid-input 
+   minlength="4" 
    error-message="${this.errorMessage}" 
-   invalid="${this.invalid}" 
+   ?invalid="${this.invalid}"
+   @value-changed="${this._valueObserver}"
    autocomplete="on">
      <iron-icon icon="${this.iconType}" slot="prefix" id="value-icon">
 </iron-icon>
@@ -149,9 +155,9 @@ class SkeletonSmartInvite extends LitElement {
      ?invalid="${this.invalid}" 
      id="status-icon"></iron-icon>
      <paper-button slot="suffix" 
-     ?hidden="${this.iconHidden}" 
+     ?hidden="${this.buttonHidden}" 
      ?disabled="${this.buttonHidden}" 
-     on-tap="_invite">
+     @tap="${this._invite}">
         INVITE
         <iron-icon icon="smart-invite:send"></iron-icon>
       </paper-button>
@@ -171,7 +177,6 @@ class SkeletonSmartInvite extends LitElement {
 
   /**
    * Validation icon
-   *
    * @param {boolean} status
    * @return {string}
    * @private
@@ -182,16 +187,17 @@ class SkeletonSmartInvite extends LitElement {
 
   /**
    * Loading Observer
-   * @param {boolean} loading
    * @private
    */
-  _loadingObserver(loading) {
+  _loadingObserver() {
+    const loading = this.loading;
     if (loading) {
       this.iconHidden = false;
       this.buttonHidden = true;
     } else {
       this.iconHidden = true;
     }
+    console.log('loading observer', loading);
   }
 
   /**
@@ -202,8 +208,8 @@ class SkeletonSmartInvite extends LitElement {
     // @ts-ignore
     changedProperties.forEach((oldValue, propName) => {
       switch (propName) {
-        case 'value':
-          this._valueObserver();
+        case 'loading':
+          this._loadingObserver();
           break;
       }
     });
@@ -211,10 +217,12 @@ class SkeletonSmartInvite extends LitElement {
 
   /**
    * Value Observer
+   * @param {object} event
    * @return {undefined}
    * @private
    */
-  _valueObserver() {
+  _valueObserver(event) {
+    this.value = event.detail.value;
     const value = this.value;
     let isValidPhone = false;
     let isValidEmail = false;
@@ -298,8 +306,9 @@ class SkeletonSmartInvite extends LitElement {
       this.iconHidden = false;
       this.sent = true;
     }).catch((err) => {
-      console.log(err);
+      console.warn(err.message);
     });
+    console.log('invite');
   }
 
   /**
